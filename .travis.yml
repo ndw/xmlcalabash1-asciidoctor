@@ -1,0 +1,5 @@
+language: java
+script: gradle dist
+install:
+- echo sonatypeUsername=none >> gradle.properties
+- echo sonatypePassword=none >> gradle.properties
