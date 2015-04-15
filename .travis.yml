@@ -3,3 +3,14 @@ script: gradle dist
 install:
 - echo sonatypeUsername=none >> gradle.properties
 - echo sonatypePassword=none >> gradle.properties
+
+deploy:
+  provider: releases
+  api_key:
+    secure: CDcAvVCBYTXK0Ka/xwj7VyuwzA/J12iGGwRHO/9mnbzddvWGY6g5mZyZFTZ4V2Tjp1olQJxjRAOGt3QUxXxhVLAFqz2cP3uXFacyPIX5NLoYNWP0q08XkCyEyvmYszcIa4ePIPk1ZHCgglP2H28z+XEY/I/nAs1lvrmSgHf9BZw=
+  file:
+    - build/distributions/xmlcalabash1-asciidoctor-$TRAVIS_TAG.zip
+  on:
+    tags: true
+    all_branches: true
+
