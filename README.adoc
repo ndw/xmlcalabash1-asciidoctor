@@ -1,4 +1,4 @@
-# XML Calabash AsciiDoctor Step
+= XML Calabash AsciiDoctor Step
 
 image::https://travis-ci.org/ndw/xmlcalabash1-asciidoctor.svg?branch=master[Build Status]
 
