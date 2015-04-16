@@ -1,12 +1,16 @@
 package com.xmlcalabash.extensions;
 
 import com.xmlcalabash.core.XMLCalabash;
+import com.xmlcalabash.core.XProcConstants;
 import com.xmlcalabash.core.XProcException;
 import com.xmlcalabash.core.XProcRuntime;
 import com.xmlcalabash.io.ReadablePipe;
 import com.xmlcalabash.io.WritablePipe;
 import com.xmlcalabash.library.DefaultStep;
 import com.xmlcalabash.runtime.XAtomicStep;
+import com.xmlcalabash.util.Base64;
+import com.xmlcalabash.util.S9apiUtils;
+import com.xmlcalabash.util.XProcURIResolver;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -96,6 +100,7 @@ public class AsciiDoctor extends DefaultStep {
         private static final QName _template_cache = new QName("", "template-cache");
         private static final QName _parse_header_only = new QName("", "parse-header-only");
 
+        private static final QName _content_type = new QName("content-type");
         private ReadablePipe source = null;
         private WritablePipe result = null;
 
@@ -120,7 +125,17 @@ public class AsciiDoctor extends DefaultStep {
                 super.run();
 
                 XdmNode doc = source.read();
-                String asciiDoc = doc.getStringValue();
+                XdmNode root = S9apiUtils.getDocumentElement(doc);
+                String asciiDoc = null;
+
+                if ((XProcConstants.c_data.equals(root.getNodeName())
+                        && "application/octet-stream".equals(root.getAttributeValue(_content_type)))
+                        || "base64".equals(root.getAttributeValue(_encoding))) {
+                        byte[] decoded = Base64.decode(root.getStringValue());
+                        asciiDoc = new String(decoded);
+                } else {
+                        asciiDoc = root.getStringValue();
+                }
 
                 Attributes adAttr = attributes();
                 Options adOpts = options();
@@ -294,25 +309,25 @@ public class AsciiDoctor extends DefaultStep {
 
                 s = getOption(_localdate, (String) null);
                 if (s != null) {
-                        DateTimeFormatter parser = ISODateTimeFormat.dateTimeNoMillis();
+                        DateTimeFormatter parser = ISODateTimeFormat.date();
                         adAttr.setLocalDate(parser.parseDateTime(s).toLocalDate().toDate());
                 }
 
                 s = getOption(_localtime, (String) null);
                 if (s != null) {
-                        DateTimeFormatter parser = ISODateTimeFormat.dateTimeNoMillis();
+                        DateTimeFormatter parser = ISODateTimeFormat.timeNoMillis();
                         adAttr.setLocalTime(parser.parseDateTime(s).toLocalDate().toDate());
                 }
 
                 s = getOption(_docdate, (String) null);
                 if (s != null) {
-                        DateTimeFormatter parser = ISODateTimeFormat.dateTimeNoMillis();
+                        DateTimeFormatter parser = ISODateTimeFormat.date();
                         adAttr.setDocDate(parser.parseDateTime(s).toLocalDate().toDate());
                 }
 
                 s = getOption(_doctime, (String) null);
                 if (s != null) {
-                        DateTimeFormatter parser = ISODateTimeFormat.dateTimeNoMillis();
+                        DateTimeFormatter parser = ISODateTimeFormat.timeNoMillis();
                         adAttr.setDocTime(parser.parseDateTime(s).toLocalDate().toDate());
                 }
 
