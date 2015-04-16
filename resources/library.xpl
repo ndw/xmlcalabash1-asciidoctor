@@ -48,7 +48,7 @@
    <p:option name="experimental"/>
    <p:option name="nofooter"/>
    <p:option name="compat-mode"/>
-   <p:option name="header-footer"/>
+   <p:option name="header-footer" select="'true'"/>
    <p:option name="template-dirs"/>
    <p:option name="template-engine"/>
    <p:option name="safe"/>
