@@ -2,20 +2,20 @@
                 xmlns:p="http://www.w3.org/ns/xproc"
                 xmlns:c="http://www.w3.org/ns/xproc-step"
                 xmlns:cx="http://xmlcalabash.com/ns/extensions"
-                exclude-inline-prefixes="c cx">
+                xmlns:db="http://docbook.org/ns/docbook"
+                exclude-inline-prefixes="c cx db">
 <p:output port="result"/>
 
 <p:import href="../../../resources/library.xpl"/>
 
-<cx:asciidoctor backend="docbook">
+<cx:asciidoctor backend="docbook5">
   <p:input port="source">
-    <p:inline><doc>Hello _World_!</doc>
-    </p:inline>
+    <p:data href="../../../README.adoc"/>
   </p:input>
 </cx:asciidoctor>
 
 <p:choose>
-  <p:when test="/simpara">
+  <p:when test="/db:article">
     <p:identity>
       <p:input port="source">
         <p:inline><c:result>PASS</c:result></p:inline>
