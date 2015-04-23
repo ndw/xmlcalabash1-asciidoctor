@@ -26,14 +26,21 @@ import org.asciidoctor.Placement;
 import org.asciidoctor.SafeMode;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXSource;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * Created by ndw on 4/14/15.
@@ -100,6 +107,7 @@ public class AsciiDoctor extends DefaultStep {
         private static final QName _template_cache = new QName("", "template-cache");
         private static final QName _parse_header_only = new QName("", "parse-header-only");
 
+        private static final String library_xpl = "http://xmlcalabash.com/extension/steps/asciidoctor.xpl";
         private static final QName _content_type = new QName("content-type");
         private ReadablePipe source = null;
         private WritablePipe result = null;
@@ -491,6 +499,49 @@ public class AsciiDoctor extends DefaultStep {
                         return false;
                 } else {
                         throw new XProcException("Invalid boolean value: " + s);
+                }
+        }
+
+        public static void configureStep(XProcRuntime runtime) {
+                XProcURIResolver resolver = runtime.getResolver();
+                URIResolver uriResolver = resolver.getUnderlyingURIResolver();
+                URIResolver myResolver = new StepResolver(uriResolver);
+                resolver.setUnderlyingURIResolver(myResolver);
+        }
+
+        private static class StepResolver implements URIResolver {
+                Logger logger = LoggerFactory.getLogger(AsciiDoctor.class);
+                URIResolver nextResolver = null;
+
+                public StepResolver(URIResolver next) {
+                        nextResolver = next;
+                }
+
+                @Override
+                public Source resolve(String href, String base) throws TransformerException {
+                        try {
+                                URI baseURI = new URI(base);
+                                URI xpl = baseURI.resolve(href);
+                                if (library_xpl.equals(xpl.toASCIIString())) {
+                                        URL url = AsciiDoctor.class.getResource("/library.xpl");
+                                        logger.debug("Reading library.xpl for cx:asciidoctor from " + url);
+                                        InputStream s = AsciiDoctor.class.getResourceAsStream("/library.xpl");
+                                        if (s != null) {
+                                                SAXSource source = new SAXSource(new InputSource(s));
+                                                return source;
+                                        } else {
+                                                logger.info("Failed to read library.xpl for cx:asciidoctor");
+                                        }
+                                }
+                        } catch (URISyntaxException e) {
+                                // nevermind
+                        }
+
+                        if (nextResolver != null) {
+                                return nextResolver.resolve(href, base);
+                        } else {
+                                return null;
+                        }
                 }
         }
 }

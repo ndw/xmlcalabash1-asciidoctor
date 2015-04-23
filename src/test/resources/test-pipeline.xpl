@@ -6,7 +6,7 @@
                 exclude-inline-prefixes="c cx db">
 <p:output port="result"/>
 
-<p:import href="../../../resources/library.xpl"/>
+<p:import href="http://xmlcalabash.com/extension/steps/asciidoctor.xpl"/>
 
 <cx:asciidoctor backend="docbook5">
   <p:input port="source">
