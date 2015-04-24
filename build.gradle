@@ -28,6 +28,7 @@ configurations {
   }
   copydep.exclude module: 'xmlcalabash'
   copydep.exclude module: 'nwalsh-annotations'
+  copydep.exclude module: 'slf4j-api'
 }
 
 configurations.all {
@@ -110,7 +111,7 @@ task copyNotices(type: Copy) {
 jar.dependsOn copyNotices
 
 task copyStuff(type: Copy) {
-  from 'README.md'
+  from 'README.adoc'
   from 'LICENSE.md'
   into 'build/dist'
 }
