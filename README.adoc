@@ -2,8 +2,8 @@
 
 image::https://travis-ci.org/ndw/xmlcalabash1-asciidoctor.svg?branch=master[Build Status]
 
-This repository contains an http://github.com/ndw/xmlcalabash1[XML Calabash 1.0]
-extension steps that supports formatting
+This repository contains http://github.com/ndw/xmlcalabash1[XML Calabash]
+1.1 extension steps that supports formatting
 http://asciidoctor.org/[AsciiDoctor] documents.
 
 This step should work with either Saxon 9.5 or Saxon 9.6.
